@@ -2,37 +2,15 @@
 
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
-import NebulaBackground from '@/components/NebulaBackground'
-import SpaceBackground from '@/components/SpaceBackground'
 import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
 import NewsletterForm from 'pliny/ui/NewsletterForm'
 import { useEffect, useState } from 'react'
-import { useTheme } from 'next-themes'
 
 const MAX_DISPLAY = 5
 
-// Theme-aware palettes for SpaceBackground
-const DARK_PALETTE = {
-  bg1:'#12080f', bg2:'#1e0f22', bg3:'#2d1438',
-  star:'rgba(255,245,230,0.95)', glow:'rgba(255,210,170,0.16)',
-  planetLight:'#ffcf9f', planetDark:'#a35b55',
-  nebula:'rgba(255,140,120,0.12)', ring:'rgba(255,200,160,0.22)',
-  ship:'#fff3e8', exhaust:'rgba(255,160,120,0.9)'
-}
-
-
-const LIGHT_PALETTE = {
-  bg1:'#fff0f6', bg2:'#ffe4ef', bg3:'#ffd7e8',
-  star:'rgba(50,35,45,0.9)', glow:'rgba(0,0,0,0.06)',
-  planetLight:'#ffbad2', planetDark:'#c66c91',
-  nebula:'rgba(255,120,170,0.12)', ring:'rgba(220,90,150,0.22)',
-  ship:'#2a1c24', exhaust:'rgba(255,150,190,0.7)'
-}
-
 export default function Home({ posts }) {
   const [scrollY, setScrollY] = useState(0)
-  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY)
@@ -44,14 +22,9 @@ export default function Home({ posts }) {
   // Starts at 0 (fully transparent) and reaches 0.85 (nearly opaque) at 800px scroll
   const backgroundOpacity = Math.min(scrollY / 700, 3)
 
-  // Select palette based on current theme
-  const currentPalette = resolvedTheme === 'dark' ? DARK_PALETTE : LIGHT_PALETTE
-  const planetTone = resolvedTheme === 'dark' ? -0.8 : 0.8
-
   return (
     <>
-      <SpaceBackground palette={currentPalette} planetTone={planetTone} />
-      {/* Scroll-based blur overlay */}
+      {/* Scroll-based blur overlay for main page only */}
       <div 
         className="fixed inset-0 z-5 pointer-events-none"
         style={{
