@@ -1,4 +1,6 @@
-import { ReactNode } from 'react'
+'use client'
+
+import { ReactNode, useEffect, useState } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import type { Blog, Authors } from 'contentlayer/generated'
 import Comments from '@/components/Comments'
@@ -27,11 +29,67 @@ interface LayoutProps {
   next?: { path: string; title: string }
   prev?: { path: string; title: string }
   children: ReactNode
+  readingTime?: number // Add reading time from the full post object
 }
 
-export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
+export default function PostLayout({ content, authorDetails, next, prev, children, readingTime }: LayoutProps) {
   const { filePath, path, slug, date, title, tags } = content
   const basePath = path.split('/')[0]
+  
+  const [scrollY, setScrollY] = useState(0)
+  const [smoothProgress, setSmoothProgress] = useState(0)
+
+  // Easing function for smoother animation
+  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+
+  useEffect(() => {
+    let targetScrollY = 0
+    let animationFrameId: number
+
+    const handleScroll = () => {
+      targetScrollY = window.scrollY
+    }
+
+    const animate = () => {
+      // Smooth interpolation between current and target scroll position
+      setScrollY(prev => {
+        const diff = targetScrollY - prev
+        const newScrollY = prev + diff * 0.1 // Adjust this value (0.1) for more/less smoothing
+        
+        // Calculate animation progress based on smooth scroll position
+        const animationStart = 100
+        const animationEnd = 800
+        const rawProgress = Math.min(Math.max((newScrollY - animationStart) / (animationEnd - animationStart), 0), 1)
+        const easedProgress = easeOutCubic(rawProgress)
+        setSmoothProgress(easedProgress)
+        
+        return newScrollY
+      })
+      
+      animationFrameId = requestAnimationFrame(animate)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    animationFrameId = requestAnimationFrame(animate)
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+      }
+    }
+  }, [])
+
+  // Calculate transforms based on smooth progress
+  const sidebarTranslateX = -smoothProgress * 100 // Move left as scroll increases
+  const sidebarOpacity = 1 - smoothProgress // Fade out as scroll increases
+  
+  // Calculate text centering - move left by half the sidebar width (12.5% of container)
+  // to center the text in the viewport
+  const textTranslateX = -smoothProgress * 12.5 // Move left by 12.5% to center in viewport
+
+  // Use the reading time from the full post object, format to whole number, fallback to 1 if not provided
+  const displayReadingTime = readingTime ? Math.ceil(readingTime) : 1
 
   return (
     <SectionContainer>
@@ -53,10 +111,23 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
               <div>
                 <PageTitle>{title}</PageTitle>
               </div>
+              <div className="pt-2">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {displayReadingTime} min read
+                </span>
+              </div>
             </div>
           </header>
-          <div className="grid-rows-[auto_1fr] divide-y divide-gray-200 pb-8 xl:grid xl:grid-cols-4 xl:gap-x-6 xl:divide-y-0 dark:divide-gray-700">
-            <dl className="pt-6 pb-10 xl:border-b xl:border-gray-200 xl:pt-11 xl:dark:border-gray-700">
+          <div className="grid-rows-[auto_1fr] divide-y divide-gray-200 pb-8 xl:grid xl:grid-cols-4 xl:gap-x-6 xl:divide-y-0 dark:divide-gray-700 relative overflow-hidden">
+            {/* Sidebar - Author Section */}
+            <dl 
+              className="pt-6 pb-10 xl:border-b xl:border-gray-200 xl:pt-11 xl:dark:border-gray-700"
+              style={{
+                transform: `translateX(${sidebarTranslateX}%)`,
+                opacity: sidebarOpacity,
+                transition: 'none'
+              }}
+            >
               <dt className="sr-only">Authors</dt>
               <dd>
                 <ul className="flex flex-wrap justify-center gap-4 sm:space-x-12 xl:block xl:space-y-8 xl:space-x-0">
@@ -93,9 +164,25 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                 </ul>
               </dd>
             </dl>
+
+            {/* Main Content Area - Fixed Grid Position */}
             <div className="divide-y divide-gray-200 xl:col-span-3 xl:row-span-2 xl:pb-0 dark:divide-gray-700">
-              <div className="prose dark:prose-invert max-w-none pt-10 pb-8">{children}</div>
-              <div className="pt-6 pb-6 text-sm text-gray-700 dark:text-gray-300">
+              <div 
+                className="prose dark:prose-invert max-w-none pt-10 pb-8"
+                style={{
+                  transform: `translateX(${textTranslateX}%)`,
+                  transition: 'none'
+                }}
+              >
+                {children}
+              </div>
+              <div 
+                className="pt-6 pb-6 text-sm text-gray-700 dark:text-gray-300"
+                style={{
+                  transform: `translateX(${textTranslateX}%)`,
+                  transition: 'none'
+                }}
+              >
                 <Link href={discussUrl(path)} rel="nofollow">
                   Discuss on Twitter
                 </Link>
@@ -105,13 +192,26 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
               {siteMetadata.comments && (
                 <div
                   className="pt-6 pb-6 text-center text-gray-700 dark:text-gray-300"
+                  style={{
+                    transform: `translateX(${textTranslateX}%)`,
+                    transition: 'none'
+                  }}
                   id="comment"
                 >
                   <Comments slug={slug} />
                 </div>
               )}
             </div>
-            <footer>
+
+            {/* Sidebar Footer - Tags and Navigation */}
+            <footer 
+              className="xl:col-start-1 xl:row-start-2"
+              style={{
+                transform: `translateX(${sidebarTranslateX}%)`,
+                opacity: sidebarOpacity,
+                transition: 'none'
+              }}
+            >
               <div className="divide-gray-200 text-sm leading-5 font-medium xl:col-start-1 xl:row-start-2 xl:divide-y dark:divide-gray-700">
                 {tags && (
                   <div className="py-4 xl:py-8">

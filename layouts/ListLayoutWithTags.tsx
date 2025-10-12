@@ -126,7 +126,7 @@ export default function ListLayoutWithTags({
           <div>
             <ul>
               {displayPosts.map((post) => {
-                const { path, date, title, summary, tags } = post
+                const { path, date, title, summary, tags, readingTime } = post
                 return (
                   <li key={path} className="py-5">
                     <article className="flex flex-col space-y-2 xl:space-y-0">
@@ -136,6 +136,11 @@ export default function ListLayoutWithTags({
                           <time dateTime={date} suppressHydrationWarning>
                             {formatDate(date, siteMetadata.locale)}
                           </time>
+                          {readingTime && (
+                            <span className="ml-2 text-sm">
+                              • {Math.ceil(readingTime.minutes)} min read
+                            </span>
+                          )}
                         </dd>
                       </dl>
                       <div className="space-y-3">
