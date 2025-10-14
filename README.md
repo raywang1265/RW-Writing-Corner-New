@@ -1,1 +1,1 @@
-Home of the new RW Writing Corner refactored and redesigned in NextJS with Tailwind!
+Home of the new RW Writing Corner refactored and redesigned in Next.js with Tailwind!
