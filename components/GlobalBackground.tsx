@@ -7,8 +7,8 @@ export default function GlobalBackground() {
   const pathname = usePathname()
   
   // Check if this is a blog post page (individual post)
-  const isBlogPost = pathname.startsWith('/blog/') && 
-    !pathname.endsWith('/blog') && 
+  const isBlogPost = pathname.startsWith('/stories/') && 
+    !pathname.endsWith('/stories') && 
     !pathname.includes('/page/') &&
     !pathname.includes('/tags/')
   

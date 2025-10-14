@@ -3,7 +3,12 @@
 import siteMetadata from '@/data/siteMetadata'
 import { useEffect, useState } from 'react'
 
-const ScrollTopAndComment = () => {
+interface ScrollTopAndCommentProps {
+  fontSize?: number
+  onFontSizeChange?: (size: number) => void
+}
+
+const ScrollTopAndComment = ({ fontSize = 100, onFontSizeChange }: ScrollTopAndCommentProps) => {
   const [show, setShow] = useState(false)
 
   useEffect(() => {
@@ -22,6 +27,19 @@ const ScrollTopAndComment = () => {
   const handleScrollToComment = () => {
     document.getElementById('comment')?.scrollIntoView()
   }
+  
+  const handleIncreaseFontSize = () => {
+    if (onFontSizeChange && fontSize < 150) {
+      onFontSizeChange(fontSize + 10)
+    }
+  }
+  
+  const handleDecreaseFontSize = () => {
+    if (onFontSizeChange && fontSize > 70) {
+      onFontSizeChange(fontSize - 10)
+    }
+  }
+  
   return (
     <div
       className={`fixed right-8 bottom-8 hidden flex-col gap-3 ${show ? 'md:flex' : 'md:hidden'}`}
@@ -40,6 +58,32 @@ const ScrollTopAndComment = () => {
             />
           </svg>
         </button>
+      )}
+      {onFontSizeChange && (
+        <div className="flex flex-col gap-2">
+          <button
+            aria-label="Increase Font Size"
+            onClick={handleIncreaseFontSize}
+            disabled={fontSize >= 150}
+            className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <text x="2" y="16" fontSize="18" fontWeight="bold" fill="currentColor">A</text>
+              <text x="12.5" y="16" fontSize="14" fontWeight="bold" fill="currentColor">a</text>
+            </svg>
+          </button>
+          <button
+            aria-label="Decrease Font Size"
+            onClick={handleDecreaseFontSize}
+            disabled={fontSize <= 70}
+            className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <text x="6" y="14" fontSize="10" fontWeight="bold" fill="currentColor">A</text>
+              <text x="12" y="14" fontSize="8" fontWeight="bold" fill="currentColor">a</text>
+            </svg>
+          </button>
+        </div>
       )}
       <button
         aria-label="Scroll To Top"

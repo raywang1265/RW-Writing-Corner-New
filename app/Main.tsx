@@ -76,7 +76,7 @@ export default function Home({ posts }) {
                         <div>
                           <h2 className="text-2xl leading-8 font-bold tracking-tight">
                             <Link
-                              href={`/blog/${slug}`}
+                              href={`/stories/${slug}`}
                               className="text-gray-900 dark:text-gray-100"
                             >
                               {title}
@@ -94,7 +94,7 @@ export default function Home({ posts }) {
                       </div>
                       <div className="text-base leading-6 font-medium">
                         <Link
-                          href={`/blog/${slug}`}
+                          href={`/stories/${slug}`}
                           className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                           aria-label={`Read more: "${title}"`}
                         >
@@ -112,7 +112,7 @@ export default function Home({ posts }) {
       {posts.length > MAX_DISPLAY && (
         <div className="flex justify-end text-base leading-6 font-medium mt-6 relative z-10">
           <Link
-            href="/blog"
+            href="/stories"
             className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
             aria-label="All posts"
           >
@@ -121,7 +121,7 @@ export default function Home({ posts }) {
         </div>
       )}
       {siteMetadata.newsletter?.provider && (
-        <div className="flex items-center justify-center pt-4 relative z-10">
+        <div id="newsletter" className="flex items-center justify-center pt-4 relative z-10">
           <NewsletterForm />
         </div>
       )}
