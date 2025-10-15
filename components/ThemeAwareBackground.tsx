@@ -1,6 +1,7 @@
 'use client'
 
 import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 import SpaceBackground from './SpaceBackground'
 
 // Theme-aware palettes for SpaceBackground
@@ -33,6 +34,16 @@ export default function ThemeAwareBackground({
   className = '' 
 }: ThemeAwareBackgroundProps) {
   const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // Prevent hydration mismatch by only rendering after mount
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
   
   // Select palette based on current theme
   const currentPalette = resolvedTheme === 'dark' ? DARK_PALETTE : LIGHT_PALETTE
