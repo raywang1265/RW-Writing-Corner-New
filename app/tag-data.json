@@ -1,6 +1,9 @@
 {
   "fiction": 5,
   "short-story": 5,
-  "fantasy": 1,
-  "sci-fi": 4
+  "sci-fi": 4,
+  "nonfiction": 1,
+  "personal": 1,
+  "tech": 1,
+  "fantasy": 1
 }
