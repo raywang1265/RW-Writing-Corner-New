@@ -13,13 +13,12 @@ const DARK_PALETTE = {
   ship:'#fff3e8', exhaust:'rgba(255,160,120,0.9)'
 }
 
-
 const LIGHT_PALETTE = {
-  bg1:'#fff4ec', bg2:'#ffe8db', bg3:'#ffdccc',
-  star:'rgba(40,30,20,0.9)', glow:'rgba(0,0,0,0.06)',
-  planetLight:'#ffbfa1', planetDark:'#d27a5f',
-  nebula:'rgba(255,140,120,0.12)', ring:'rgba(230,110,100,0.22)',
-  ship:'#1e1a18', exhaust:'rgba(255,150,110,0.75)'
+  bg1:'#fff7ef', bg2:'#ffeadb', bg3:'#ffe0c9',
+  star:'rgba(60,45,30,0.9)', glow:'rgba(0,0,0,0.06)',
+  planetLight:'#ffc89d', planetDark:'#b6713f',
+  nebula:'rgba(255,190,140,0.14)', ring:'rgba(240,170,120,0.22)',
+  ship:'#2b2014', exhaust:'rgba(255,190,140,0.74)'
 }
 
 interface ThemeAwareBackgroundProps {

@@ -120,7 +120,7 @@ export default function Home({ posts }) {
         }}
       />
       <div className="relative z-10 divide-y divide-gray-200/30 dark:divide-gray-700/30 p-6">
-        <div className="space-y-8 pt-8 pb-12 md:space-y-10">
+        <div className="space-y-8 pt-8 pb-6 md:space-y-10">
           <div className="space-y-6">
             <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-gray-900 sm:text-5xl sm:leading-tight md:text-7xl md:leading-tight dark:text-gray-100">
               {isMounted && (
@@ -136,8 +136,11 @@ export default function Home({ posts }) {
                 </>
               )}
             </h1>
-            <p className="text-xl leading-8 text-gray-600 dark:text-gray-300 max-w-4xl">
-            You've arrived at my hub for all things writing, with a side of tech and personal projects. If you'd like to delve into some fiction, head over to the stories tab or scroll down to see the latest stories. If you're interested in finding more about me (perhaps in the context of recruitment), check out the about tab and feel free to read{' '}
+            <p className="text-xl leading-8 text-gray-600 dark:text-gray-300 max-w-[700px]">
+            You've arrived at my hub for all things writing, with a side of tech and personal projects. If you'd like to delve into some fiction, head over to the stories tab or scroll down to see the latest stories. 
+            <br></br>
+            <br></br>
+            If you're interested in finding more about me (perhaps in the context of recruitment), check out the about tab and feel free to read{' '}
             <Link 
               href="/stories/my-story-with-tech"
               className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 underline"
@@ -146,10 +149,10 @@ export default function Home({ posts }) {
             </Link>!
             <br></br>
             <br></br>
-            On a side note, this website also displays a randomized theme and welcome message to keep things fresh on every visit! However, if you find there’s a particular theme you enjoy the most, you can choose one from the available set in the theme picker :)
+            Thanks for stopping by and happy reading :)
             </p>
           </div>
-          <div className="space-y-4 mt-12">
+          <div className="space-y-4 mt-40">
             <h1 className="text-3xl leading-8 font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 dark:text-gray-100">
               Latest
             </h1>
