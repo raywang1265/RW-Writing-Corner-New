@@ -39,14 +39,19 @@ export default function Home({ posts }) {
               Welcome
             </h1>
             <p className="text-xl leading-8 text-gray-600 dark:text-gray-300 max-w-4xl">
-              A space where thoughts transform into words, ideas take flight, and stories come alive. 
-              Join me on this journey through the art of writing, creativity, and the endless possibilities of language. 
-              Here you'll find insights on storytelling, practical writing tips, and inspiration to fuel your creative journey. 
-              Whether you're a seasoned writer or just beginning to explore the world of words, this corner of the internet 
-              is designed to inspire, educate, and connect fellow lovers of the written word.
+            You've arrived at my hub for all things writing, with a side of tech and personal projects. If you'd like to delve into some fiction, head over to the stories tab or scroll down to see the latest stories. If you're interested in finding more about me (perhaps in the context of recruitment), check out the about tab and feel free to read{' '}
+            <Link 
+              href="/stories/my-story-with-tech"
+              className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 underline"
+            >
+              this article on my history with tech
+            </Link>!
+            <br></br>
+            <br></br>
+            On a side note, this website also displays a randomized theme and welcome message to keep things fresh on every visit! However, if you find there’s a particular theme you enjoy the most, you can choose one from the available set in the theme picker :)
             </p>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 mt-12">
             <h1 className="text-3xl leading-8 font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 dark:text-gray-100">
               Latest
             </h1>
