@@ -86,7 +86,7 @@ export default function NebulaBackground() {
         for (let j = 0; j < 8; j++) {
           shape.push(Math.random() * 0.4 + 0.8) // Random radius variations
         }
-        
+
         asteroids.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -107,7 +107,12 @@ export default function NebulaBackground() {
     initAsteroids()
 
     // Trail management functions
-    const addTrailPoint = (trail: Array<{ x: number; y: number; z: number; opacity: number }>, x: number, y: number, z: number) => {
+    const addTrailPoint = (
+      trail: Array<{ x: number; y: number; z: number; opacity: number }>,
+      x: number,
+      y: number,
+      z: number
+    ) => {
       trail.push({ x, y, z, opacity: 1.0 })
       // Limit trail length
       if (trail.length > 20) {
@@ -117,20 +122,24 @@ export default function NebulaBackground() {
 
     const updateTrail = (trail: Array<{ x: number; y: number; z: number; opacity: number }>) => {
       // Fade out trail points
-      trail.forEach(point => {
+      trail.forEach((point) => {
         point.opacity -= 0.05
       })
       // Remove faded points
-      return trail.filter(point => point.opacity > 0)
+      return trail.filter((point) => point.opacity > 0)
     }
 
-    const drawTrail = (trail: Array<{ x: number; y: number; z: number; opacity: number }>, color: { r: number; g: number; b: number }, size: number) => {
+    const drawTrail = (
+      trail: Array<{ x: number; y: number; z: number; opacity: number }>,
+      color: { r: number; g: number; b: number },
+      size: number
+    ) => {
       if (trail.length < 2) return
 
       for (let i = 0; i < trail.length - 1; i++) {
         const point1 = trail[i]
         const point2 = trail[i + 1]
-        
+
         // Calculate 2D positions
         const x1 = (point1.x - canvas.width / 2) * (300 / point1.z) + canvas.width / 2
         const y1 = (point1.y - canvas.height / 2) * (300 / point1.z) + canvas.height / 2
@@ -138,9 +147,10 @@ export default function NebulaBackground() {
         const y2 = (point2.y - canvas.height / 2) * (300 / point2.z) + canvas.height / 2
 
         // Only draw if both points are on screen
-        if ((x1 >= -50 && x1 <= canvas.width + 50 && y1 >= -50 && y1 <= canvas.height + 50) ||
-            (x2 >= -50 && x2 <= canvas.width + 50 && y2 >= -50 && y2 <= canvas.height + 50)) {
-          
+        if (
+          (x1 >= -50 && x1 <= canvas.width + 50 && y1 >= -50 && y1 <= canvas.height + 50) ||
+          (x2 >= -50 && x2 <= canvas.width + 50 && y2 >= -50 && y2 <= canvas.height + 50)
+        ) {
           ctx.beginPath()
           ctx.moveTo(x1, y1)
           ctx.lineTo(x2, y2)
@@ -163,13 +173,13 @@ export default function NebulaBackground() {
       stars.forEach((star) => {
         // Add current position to trail
         addTrailPoint(star.trail, star.x, star.y, star.z)
-        
+
         // Update trail (fade and remove old points)
         star.trail = updateTrail(star.trail)
-        
+
         // Very slow movement towards viewer
         star.z -= speed * 0.5
-        
+
         // Reset star when it gets too close
         if (star.z <= 100) {
           star.x = Math.random() * canvas.width * 2 - canvas.width / 2
@@ -188,7 +198,13 @@ export default function NebulaBackground() {
         drawTrail(star.trail, star.color, size)
 
         // Only draw star if on screen and visible
-        if (x >= -10 && x <= canvas.width + 10 && y >= -10 && y <= canvas.height + 10 && size > 0.1) {
+        if (
+          x >= -10 &&
+          x <= canvas.width + 10 &&
+          y >= -10 &&
+          y <= canvas.height + 10 &&
+          size > 0.1
+        ) {
           // Static stars with no twinkling or streaking
           ctx.beginPath()
           ctx.arc(x, y, size, 0, Math.PI * 2)
@@ -201,10 +217,10 @@ export default function NebulaBackground() {
       asteroids.forEach((asteroid) => {
         // Add current position to trail
         addTrailPoint(asteroid.trail, asteroid.x, asteroid.y, asteroid.z)
-        
+
         // Update trail (fade and remove old points)
         asteroid.trail = updateTrail(asteroid.trail)
-        
+
         // Update position
         asteroid.x += asteroid.vx
         asteroid.y += asteroid.vy
@@ -212,8 +228,13 @@ export default function NebulaBackground() {
         asteroid.rotation += asteroid.rotationSpeed
 
         // Reset asteroid when it goes off screen or gets too close
-        if (asteroid.z <= 50 || asteroid.x < -100 || asteroid.x > canvas.width + 100 || 
-            asteroid.y < -100 || asteroid.y > canvas.height + 100) {
+        if (
+          asteroid.z <= 50 ||
+          asteroid.x < -100 ||
+          asteroid.x > canvas.width + 100 ||
+          asteroid.y < -100 ||
+          asteroid.y > canvas.height + 100
+        ) {
           asteroid.x = Math.random() * canvas.width
           asteroid.y = Math.random() * canvas.height
           asteroid.z = 800 + Math.random() * 400
@@ -236,14 +257,14 @@ export default function NebulaBackground() {
           ctx.save()
           ctx.translate(x, y)
           ctx.rotate(asteroid.rotation)
-          
+
           ctx.beginPath()
           for (let i = 0; i < asteroid.shape.length; i++) {
             const angle = (i / asteroid.shape.length) * Math.PI * 2
             const radius = size * asteroid.shape[i]
             const px = Math.cos(angle) * radius
             const py = Math.sin(angle) * radius
-            
+
             if (i === 0) {
               ctx.moveTo(px, py)
             } else {
@@ -251,16 +272,16 @@ export default function NebulaBackground() {
             }
           }
           ctx.closePath()
-          
+
           // Dark gray asteroid color
           ctx.fillStyle = `rgba(80, 80, 80, ${Math.max(0, 1 - asteroid.z / 1000)})`
           ctx.fill()
-          
+
           // Add subtle highlight
           ctx.strokeStyle = `rgba(120, 120, 120, ${Math.max(0, 0.3 - asteroid.z / 2000)})`
           ctx.lineWidth = 1
           ctx.stroke()
-          
+
           ctx.restore()
         }
       })
@@ -280,8 +301,8 @@ export default function NebulaBackground() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 -z-10 h-full w-full"
-      style={{ 
-        background: 'radial-gradient(ellipse at center, #000011 0%, #000008 50%, #000000 100%)' 
+      style={{
+        background: 'radial-gradient(ellipse at center, #000011 0%, #000008 50%, #000000 100%)',
       }}
     />
   )

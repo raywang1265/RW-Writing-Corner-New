@@ -27,60 +27,69 @@ const ScrollTopAndComment = ({ fontSize = 100, onFontSizeChange }: ScrollTopAndC
   const handleScrollToComment = () => {
     document.getElementById('comment')?.scrollIntoView()
   }
-  
+
   const handleIncreaseFontSize = () => {
     if (onFontSizeChange && fontSize < 150) {
       onFontSizeChange(fontSize + 10)
     }
   }
-  
+
   const handleDecreaseFontSize = () => {
     if (onFontSizeChange && fontSize > 70) {
       onFontSizeChange(fontSize - 10)
     }
   }
-  
+
   return (
     <div
       className={`fixed right-8 bottom-8 hidden flex-col gap-3 ${show ? 'md:flex' : 'md:hidden'}`}
     >
-      {false && siteMetadata.comments?.provider && ( //hiden for now, will be implemented later
-        <button
-          aria-label="Scroll To Comment"
-          onClick={handleScrollToComment}
-          className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
-        >
-          <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path
-              fillRule="evenodd"
-              d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-      )}
+      {false &&
+        siteMetadata.comments?.provider && ( //hiden for now, will be implemented later
+          <button
+            aria-label="Scroll To Comment"
+            onClick={handleScrollToComment}
+            className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+          >
+            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fillRule="evenodd"
+                d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        )}
       {onFontSizeChange && (
         <div className="flex flex-col gap-2">
           <button
             aria-label="Increase Font Size"
             onClick={handleIncreaseFontSize}
             disabled={fontSize >= 150}
-            className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
           >
             <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <text x="2" y="16" fontSize="18" fontWeight="bold" fill="currentColor">A</text>
-              <text x="12.5" y="16" fontSize="14" fontWeight="bold" fill="currentColor">a</text>
+              <text x="2" y="16" fontSize="18" fontWeight="bold" fill="currentColor">
+                A
+              </text>
+              <text x="12.5" y="16" fontSize="14" fontWeight="bold" fill="currentColor">
+                a
+              </text>
             </svg>
           </button>
           <button
             aria-label="Decrease Font Size"
             onClick={handleDecreaseFontSize}
             disabled={fontSize <= 70}
-            className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
           >
             <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <text x="6" y="14" fontSize="10" fontWeight="bold" fill="currentColor">A</text>
-              <text x="12" y="14" fontSize="8" fontWeight="bold" fill="currentColor">a</text>
+              <text x="6" y="14" fontSize="10" fontWeight="bold" fill="currentColor">
+                A
+              </text>
+              <text x="12" y="14" fontSize="8" fontWeight="bold" fill="currentColor">
+                a
+              </text>
             </svg>
           </button>
         </div>

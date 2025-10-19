@@ -3,11 +3,17 @@
 import { useEffect, useRef } from 'react'
 
 type Palette = {
-  bg1: string; bg2: string; bg3: string;
-  star: string; glow: string;
-  planetLight: string; planetDark: string;
-  nebula: string; ring: string;
-  ship: string; exhaust: string;
+  bg1: string
+  bg2: string
+  bg3: string
+  star: string
+  glow: string
+  planetLight: string
+  planetDark: string
+  nebula: string
+  ring: string
+  ship: string
+  exhaust: string
 }
 
 const DEFAULTS: Palette = {
@@ -30,7 +36,7 @@ export default function SpaceBackground({
   motion = 1.8,
   shipMinDelay = 3,
   shipMaxDelay = 7,
-  speedScale = 0.75,     // slower overall by default
+  speedScale = 0.75, // slower overall by default
   className = '',
   planetTone = 0,
 }: {
@@ -51,7 +57,9 @@ export default function SpaceBackground({
     const ctx = canvas.getContext('2d', { alpha: true })!
     if (!ctx) return
 
-    let w = 0, h = 0, raf = 0
+    let w = 0,
+      h = 0,
+      raf = 0
     let frameCount = 0
     let lastSec = 0
 
@@ -71,17 +79,26 @@ export default function SpaceBackground({
 
     // deterministic RNG for stable star layout
     let seed = 42
-    const rnd = () => { seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5; return ((seed >>> 0) % 1000) / 1000 }
+    const rnd = () => {
+      seed ^= seed << 13
+      seed ^= seed >> 17
+      seed ^= seed << 5
+      return ((seed >>> 0) % 1000) / 1000
+    }
     const frand = (a: number, b: number) => a + (b - a) * Math.random()
 
     const makeNoise = (size = 128) => {
       const n = document.createElement('canvas')
-      n.width = size; n.height = size
+      n.width = size
+      n.height = size
       const nctx = n.getContext('2d')!
       const img = nctx.createImageData(size, size)
       for (let i = 0; i < img.data.length; i += 4) {
         const v = 220 + Math.floor(Math.random() * 35)
-        img.data[i] = v; img.data[i + 1] = v; img.data[i + 2] = v; img.data[i + 3] = Math.random() * 10
+        img.data[i] = v
+        img.data[i + 1] = v
+        img.data[i + 2] = v
+        img.data[i + 3] = Math.random() * 10
       }
       nctx.putImageData(img, 0, 0)
       return n
@@ -106,7 +123,8 @@ export default function SpaceBackground({
 
     const radial = (cx: number, cy: number, r: number, c0: string, c1: string) => {
       const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r)
-      g.addColorStop(0, c0); g.addColorStop(1, c1)
+      g.addColorStop(0, c0)
+      g.addColorStop(1, c1)
       return g
     }
 
@@ -125,7 +143,7 @@ export default function SpaceBackground({
       const off = Math.sin(sec * 0.14 * motion) * 12
       const cx = w * 0.66 + off
       const cy = h * 0.42 + off * 0.5
-      const R  = Math.min(w, h) * 0.38
+      const R = Math.min(w, h) * 0.38
 
       ctx.save()
       ctx.beginPath()
@@ -156,7 +174,13 @@ export default function SpaceBackground({
       }
 
       ctx.globalAlpha = 0.6
-      ctx.fillStyle = radial(cx + R * 0.2, cy - R * 0.1, R * 1.2, 'rgba(0,0,0,0)', 'rgba(0,0,0,0.6)')
+      ctx.fillStyle = radial(
+        cx + R * 0.2,
+        cy - R * 0.1,
+        R * 1.2,
+        'rgba(0,0,0,0)',
+        'rgba(0,0,0,0.6)'
+      )
       ctx.beginPath()
       ctx.arc(cx, cy, R, 0, Math.PI * 2)
       ctx.fill()
@@ -241,9 +265,15 @@ export default function SpaceBackground({
     // -------- SPACESHIP (single ship, dynamic TTL fix) --------
     type Trail = { x: number; y: number; life: number }
     type Ship = {
-      x: number; y: number; vx: number; vy: number;
-      angle: number; size: number; variant: number;
-      ttl: number; trail: Trail[];
+      x: number
+      y: number
+      vx: number
+      vy: number
+      angle: number
+      size: number
+      variant: number
+      ttl: number
+      trail: Trail[]
     }
     let activeShip: Ship | null = null
     let nextSpawnAt = 0 // seconds
@@ -255,12 +285,32 @@ export default function SpaceBackground({
     function spawnShip() {
       const margin = 100
       const edge = Math.floor(Math.random() * 4) // 0 top, 1 right, 2 bottom, 3 left
-      let x = 0, y = 0, targetX = 0, targetY = 0
+      let x = 0,
+        y = 0,
+        targetX = 0,
+        targetY = 0
 
-      if (edge === 0) { x = frand(-margin, w + margin); y = -margin; targetX = frand(0, w); targetY = h + margin }
-      else if (edge === 1) { x = w + margin; y = frand(-margin, h + margin); targetX = -margin; targetY = frand(0, h) }
-      else if (edge === 2) { x = frand(-margin, w + margin); y = h + margin; targetX = frand(0, w); targetY = -margin }
-      else { x = -margin; y = frand(-margin, h + margin); targetX = w + margin; targetY = frand(0, h) }
+      if (edge === 0) {
+        x = frand(-margin, w + margin)
+        y = -margin
+        targetX = frand(0, w)
+        targetY = h + margin
+      } else if (edge === 1) {
+        x = w + margin
+        y = frand(-margin, h + margin)
+        targetX = -margin
+        targetY = frand(0, h)
+      } else if (edge === 2) {
+        x = frand(-margin, w + margin)
+        y = h + margin
+        targetX = frand(0, w)
+        targetY = -margin
+      } else {
+        x = -margin
+        y = frand(-margin, h + margin)
+        targetX = w + margin
+        targetY = frand(0, h)
+      }
 
       const dx = targetX - x
       const dy = targetY - y
@@ -275,8 +325,8 @@ export default function SpaceBackground({
       const variant = Math.random() < 0.5 ? 0 : 1
 
       // ---- FIX: dynamic TTL based on distance/speed (+ buffer) ----
-      const distance = Math.hypot(dx, dy)         // px along path to exit
-      const bufferSec = 2.0                       // safety time after reaching target
+      const distance = Math.hypot(dx, dy) // px along path to exit
+      const bufferSec = 2.0 // safety time after reaching target
       const ttl = Math.min(30, distance / Math.max(60, baseSpeed) + bufferSec)
       // (cap at 30s; also clamp divisor to avoid absurd TTL if baseSpeed is tiny)
 
@@ -296,7 +346,7 @@ export default function SpaceBackground({
       s.trail.push({ x: s.x, y: s.y, life: 0.5 })
       if (s.trail.length > 60) s.trail.shift()
       for (const p of s.trail) p.life -= dt * 0.9
-      s.trail = s.trail.filter(p => p.life > 0)
+      s.trail = s.trail.filter((p) => p.life > 0)
 
       // Despawn when fully past off-screen bounds OR TTL emergency fallback
       if (s.x < -140 || s.x > w + 140 || s.y < -140 || s.y > h + 140 || s.ttl <= 0) {
@@ -313,7 +363,8 @@ export default function SpaceBackground({
       ctx.save()
       ctx.globalCompositeOperation = 'lighter'
       for (let i = 0; i < s.trail.length - 1; i++) {
-        const p1 = s.trail[i], p2 = s.trail[i + 1]
+        const p1 = s.trail[i],
+          p2 = s.trail[i + 1]
         ctx.strokeStyle = palette.exhaust
         ctx.globalAlpha = Math.max(0, p1.life) * 0.5
         ctx.lineWidth = Math.max(0.5, s.size * 0.18)
@@ -334,7 +385,9 @@ export default function SpaceBackground({
 
       if (s.variant === 0) {
         // DART
-        const L = s.size, W = s.size * 0.42, F = s.size * 0.25
+        const L = s.size,
+          W = s.size * 0.42,
+          F = s.size * 0.25
         ctx.beginPath()
         ctx.moveTo(L, 0)
         ctx.lineTo(-L * 0.6, -W)
@@ -344,10 +397,12 @@ export default function SpaceBackground({
         ctx.lineTo(-L * 0.6, W)
         ctx.closePath()
         ctx.globalAlpha = 0.95
-        ctx.fill(); ctx.stroke()
+        ctx.fill()
+        ctx.stroke()
       } else {
         // SHUTTLE
-        const L = s.size * 0.9, W = s.size * 0.5
+        const L = s.size * 0.9,
+          W = s.size * 0.5
         ctx.beginPath()
         ctx.moveTo(L, 0)
         ctx.quadraticCurveTo(0, -W, -L, -W * 0.5)
@@ -355,7 +410,8 @@ export default function SpaceBackground({
         ctx.quadraticCurveTo(0, W, L, 0)
         ctx.closePath()
         ctx.globalAlpha = 0.95
-        ctx.fill(); ctx.stroke()
+        ctx.fill()
+        ctx.stroke()
 
         // wings
         ctx.globalAlpha = 0.85
@@ -410,8 +466,7 @@ export default function SpaceBackground({
       ref={canvasRef}
       className={`fixed inset-0 -z-10 h-full w-full ${className}`}
       style={{
-        background:
-          `radial-gradient(1200px 800px at 70% 35%, ${palette.bg3}, transparent 60%),
+        background: `radial-gradient(1200px 800px at 70% 35%, ${palette.bg3}, transparent 60%),
            linear-gradient(${palette.bg3}, ${palette.bg2} 55%, ${palette.bg1})`,
       }}
       aria-hidden

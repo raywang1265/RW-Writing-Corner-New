@@ -28,10 +28,17 @@ interface LayoutProps {
   readingTime?: number // Add reading time from the full post object
 }
 
-export default function PostLayout({ content, authorDetails, next, prev, children, readingTime }: LayoutProps) {
+export default function PostLayout({
+  content,
+  authorDetails,
+  next,
+  prev,
+  children,
+  readingTime,
+}: LayoutProps) {
   const { filePath, path, slug, date, title, tags } = content
   const basePath = path.split('/')[0]
-  
+
   const [scrollY, setScrollY] = useState(0)
   const [smoothProgress, setSmoothProgress] = useState(0)
   const [fontSize, setFontSize] = useState(100)
@@ -43,17 +50,17 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
   // Detect if screen is large (xl breakpoint = 1280px)
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 1280px)')
-    
+
     const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => {
       setIsLargeScreen(e.matches)
     }
-    
+
     // Set initial value
     handleMediaChange(mediaQuery)
-    
+
     // Listen for changes
     mediaQuery.addEventListener('change', handleMediaChange)
-    
+
     return () => {
       mediaQuery.removeEventListener('change', handleMediaChange)
     }
@@ -69,26 +76,29 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
 
     const animate = () => {
       // Smooth interpolation between current and target scroll position
-      setScrollY(prev => {
+      setScrollY((prev) => {
         const diff = targetScrollY - prev
         const newScrollY = prev + diff * 0.1 // Adjust this value (0.1) for more/less smoothing
-        
+
         // Calculate animation progress based on smooth scroll position
         const animationStart = 100
         const animationEnd = 800
-        const rawProgress = Math.min(Math.max((newScrollY - animationStart) / (animationEnd - animationStart), 0), 1)
+        const rawProgress = Math.min(
+          Math.max((newScrollY - animationStart) / (animationEnd - animationStart), 0),
+          1
+        )
         const easedProgress = easeOutCubic(rawProgress)
         setSmoothProgress(easedProgress)
-        
+
         return newScrollY
       })
-      
+
       animationFrameId = requestAnimationFrame(animate)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     animationFrameId = requestAnimationFrame(animate)
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll)
       if (animationFrameId) {
@@ -100,7 +110,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
   // Calculate transforms based on smooth progress
   const sidebarTranslateX = -smoothProgress * 100 // Move left as scroll increases
   const sidebarOpacity = 1 - smoothProgress // Fade out as scroll increases
-  
+
   // Calculate text centering so the 3/4-width content is centered in a 4-col grid.
   // Translate is relative to the element's width, so we convert the desired container shift (12.5%)
   // into element-relative units: (12.5% / 75%) = 16.6667% of the element width.
@@ -109,7 +119,9 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
   const contentSpan = 3
   const contentWidthFraction = contentSpan / gridColumns // 0.75
   const targetCenterShiftFraction = (1 - contentWidthFraction) / 2 // 0.125 of container
-  const textTranslateX = isLargeScreen ? -smoothProgress * (targetCenterShiftFraction / contentWidthFraction) * 100 : 0
+  const textTranslateX = isLargeScreen
+    ? -smoothProgress * (targetCenterShiftFraction / contentWidthFraction) * 100
+    : 0
 
   // Use the reading time from the full post object, format to whole number, fallback to 1 if not provided
   const displayReadingTime = readingTime ? Math.ceil(readingTime) : 1
@@ -141,15 +153,15 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
               </div>
             </div>
           </header>
-          <div className="grid-rows-[auto_1fr] divide-y divide-gray-200 pb-8 xl:grid xl:grid-cols-4 xl:gap-x-6 xl:divide-y-0 dark:divide-gray-700 relative overflow-hidden">
+          <div className="relative grid-rows-[auto_1fr] divide-y divide-gray-200 overflow-hidden pb-8 xl:grid xl:grid-cols-4 xl:gap-x-6 xl:divide-y-0 dark:divide-gray-700">
             {/* Sidebar - Author Section */}
             {false && ( // hidden for now, will be implemented later
-              <dl 
+              <dl
                 className="pt-6 pb-10 xl:border-b xl:border-gray-200 xl:pt-11 xl:dark:border-gray-700"
                 style={{
                   transform: `translateX(${sidebarTranslateX}%)`,
                   opacity: sidebarOpacity,
-                  transition: 'none'
+                  transition: 'none',
                 }}
               >
                 <dt className="sr-only">Authors</dt>
@@ -192,12 +204,12 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
 
             {/* Main Content Area - Fixed Grid Position */}
             <div className="divide-y divide-gray-200 xl:col-span-3 xl:row-span-2 xl:pb-0 dark:divide-gray-700">
-              <div 
+              <div
                 className="prose dark:prose-invert max-w-none pt-10 pb-8"
                 style={{
                   transform: `translateX(${textTranslateX}%)`,
                   transition: 'none',
-                  fontSize: `${fontSize}%`
+                  fontSize: `${fontSize}%`,
                 }}
               >
                 {children}
@@ -218,12 +230,12 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
             </div>
 
             {/* Sidebar Footer - Tags and Navigation */}
-            <footer 
+            <footer
               className="xl:col-start-1 xl:row-start-2"
               style={{
                 transform: `translateX(${sidebarTranslateX}%)`,
                 opacity: sidebarOpacity,
-                transition: 'none'
+                transition: 'none',
               }}
             >
               <div className="divide-gray-200 text-sm leading-5 font-medium xl:col-start-1 xl:row-start-2 xl:divide-y dark:divide-gray-700">

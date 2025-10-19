@@ -26,10 +26,7 @@ export async function POST(req: NextRequest) {
 
     if (existing) {
       if (existing.subscribed) {
-        return NextResponse.json(
-          { message: 'You are already subscribed!' },
-          { status: 200 }
-        )
+        return NextResponse.json({ message: 'You are already subscribed!' }, { status: 200 })
       } else {
         // Resubscribe
         const { error: updateError } = await supabase
@@ -47,16 +44,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Add new subscriber
-    const { error: insertError } = await supabase
-      .from('newsletter_subscribers')
-      .insert([
-        {
-          email: email.toLowerCase(),
-          subscribed: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ])
+    const { error: insertError } = await supabase.from('newsletter_subscribers').insert([
+      {
+        email: email.toLowerCase(),
+        subscribed: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ])
 
     if (insertError) {
       console.error('Error inserting subscriber:', insertError)

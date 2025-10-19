@@ -2,12 +2,12 @@
 
 /**
  * Newsletter Sending Script
- * 
+ *
  * This script sends a newsletter to all subscribed users.
- * 
+ *
  * Usage:
  *   node scripts/send-newsletter.mjs --subject "Your Subject" --content "path/to/content.html"
- * 
+ *
  * Or for a test run:
  *   node scripts/send-newsletter.mjs --test --subject "Test" --content "path/to/content.html"
  */
@@ -29,7 +29,9 @@ const contentIndex = args.indexOf('--content')
 const htmlIndex = args.indexOf('--html')
 
 if (subjectIndex === -1 || (contentIndex === -1 && htmlIndex === -1)) {
-  console.error('Usage: node send-newsletter.mjs --subject "Your Subject" [--content path/to/file.html | --html "<p>HTML content</p>"] [--test]')
+  console.error(
+    'Usage: node send-newsletter.mjs --subject "Your Subject" [--content path/to/file.html | --html "<p>HTML content</p>"] [--test]'
+  )
   process.exit(1)
 }
 
@@ -81,7 +83,7 @@ async function getSubscribers() {
     throw new Error(`Failed to fetch subscribers: ${error.message}`)
   }
 
-  return data.map(sub => sub.email)
+  return data.map((sub) => sub.email)
 }
 
 function createEmailHTML(content, email) {
@@ -173,9 +175,9 @@ async function sendNewsletter() {
     for (let i = 0; i < emailsToSend.length; i++) {
       const email = emailsToSend[i]
       const emailHTML = createEmailHTML(htmlContent, email)
-      
+
       const result = await sendEmail(email, subject, emailHTML)
-      
+
       if (result.success) {
         successCount++
         console.log(`✅ Sent to ${email}`)
@@ -186,7 +188,7 @@ async function sendNewsletter() {
 
       // Rate limiting: wait 100ms between emails
       if (i < emailsToSend.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 100))
       }
     }
 
@@ -194,7 +196,6 @@ async function sendNewsletter() {
     console.log('📈 Newsletter Send Complete!')
     console.log(`✅ Successful: ${successCount}`)
     console.log(`❌ Failed: ${failCount}`)
-
   } catch (error) {
     console.error('❌ Error sending newsletter:', error.message)
     process.exit(1)
