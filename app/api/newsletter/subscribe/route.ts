@@ -15,9 +15,20 @@ const SITE_URL =
 
 async function sendWelcomeEmail(email: string) {
   try {
+    console.log('[Welcome Email] Starting to send welcome email to:', email)
+    console.log('[Welcome Email] Environment check:', {
+      hasResendKey: !!process.env.RESEND_API_KEY,
+      fromEmail: FROM_EMAIL,
+      fromName: FROM_NAME,
+      siteUrl: SITE_URL,
+    })
+
     // Read the welcome email template
     const templatePath = resolve(process.cwd(), 'newsletter-templates', 'welcome.html')
+    console.log('[Welcome Email] Template path:', templatePath)
+
     let htmlContent = readFileSync(templatePath, 'utf-8')
+    console.log('[Welcome Email] Template loaded successfully')
 
     // Replace placeholders
     htmlContent = htmlContent.replace(/{{SITE_URL}}/g, SITE_URL)
@@ -43,6 +54,8 @@ Ray
 Unsubscribe: ${SITE_URL}/unsubscribe?email=${encodeURIComponent(email)}
     `.trim()
 
+    console.log('[Welcome Email] Sending email via Resend...')
+
     // Send the email with both HTML and plain text versions
     const { data, error } = await resend.emails.send({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
@@ -53,13 +66,14 @@ Unsubscribe: ${SITE_URL}/unsubscribe?email=${encodeURIComponent(email)}
     })
 
     if (error) {
-      console.error('Error sending welcome email:', error)
+      console.error('[Welcome Email] Error sending welcome email:', error)
       return { success: false, error }
     }
 
+    console.log('[Welcome Email] Email sent successfully! ID:', data?.id)
     return { success: true, data }
   } catch (error) {
-    console.error('Error in sendWelcomeEmail:', error)
+    console.error('[Welcome Email] Exception in sendWelcomeEmail:', error)
     return { success: false, error }
   }
 }
