@@ -48,7 +48,7 @@ export default function SpaceBackground({
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d', { alpha: true })
+    const ctx = canvas.getContext('2d', { alpha: true })!
     if (!ctx) return
 
     let w = 0, h = 0, raf = 0
