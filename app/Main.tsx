@@ -175,7 +175,7 @@ export default function Home({ posts }) {
               Latest
             </h1>
           </div>
-        <ul className="divide-y divide-gray-200 dark:divide-gray-700 mt-8">
+        <ul className="divide-y divide-gray-200 dark:divide-gray-700 mt-4">
           {!posts.length && 'No posts found.'}
           {posts.slice(0, MAX_DISPLAY).map((post) => {
             const { slug, date, title, summary, tags, readingTime } = post
