@@ -10,6 +10,7 @@ interface ScrollTopAndCommentProps {
 
 const ScrollTopAndComment = ({ fontSize = 100, onFontSizeChange }: ScrollTopAndCommentProps) => {
   const [show, setShow] = useState(false)
+  const SHOW_COMMENTS = false // Hidden for now, will be implemented later
 
   useEffect(() => {
     const handleWindowScroll = () => {
@@ -44,22 +45,21 @@ const ScrollTopAndComment = ({ fontSize = 100, onFontSizeChange }: ScrollTopAndC
     <div
       className={`fixed right-8 bottom-8 hidden flex-col gap-3 ${show ? 'md:flex' : 'md:hidden'}`}
     >
-      {false &&
-        siteMetadata.comments?.provider && ( //hiden for now, will be implemented later
-          <button
-            aria-label="Scroll To Comment"
-            onClick={handleScrollToComment}
-            className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
-          >
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-        )}
+      {SHOW_COMMENTS && siteMetadata.comments?.provider && (
+        <button
+          aria-label="Scroll To Comment"
+          onClick={handleScrollToComment}
+          className="rounded-full bg-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+        >
+          <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fillRule="evenodd"
+              d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      )}
       {onFontSizeChange && (
         <div className="flex flex-col gap-2">
           <button

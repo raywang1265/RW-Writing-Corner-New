@@ -24,7 +24,7 @@ export default function NebulaBackground() {
     // Animation variables
     let animationId: number
     let time = 0
-    let speed = 0.3 // Much slower, realistic travel speed
+    const speed = 0.3 // Much slower, realistic travel speed
 
     // Realistic star colors - mostly white with subtle variations
     const starColors = [

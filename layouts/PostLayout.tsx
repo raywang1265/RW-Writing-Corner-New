@@ -43,6 +43,7 @@ export default function PostLayout({
   const [smoothProgress, setSmoothProgress] = useState(0)
   const [fontSize, setFontSize] = useState(100)
   const [isLargeScreen, setIsLargeScreen] = useState(false)
+  const SHOW_AUTHOR_SIDEBAR = false // Hidden for now, will be implemented later
 
   // Easing function for smoother animation
   const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
@@ -155,7 +156,7 @@ export default function PostLayout({
           </header>
           <div className="relative grid-rows-[auto_1fr] divide-y divide-gray-200 overflow-hidden pb-8 xl:grid xl:grid-cols-4 xl:gap-x-6 xl:divide-y-0 dark:divide-gray-700">
             {/* Sidebar - Author Section */}
-            {false && ( // hidden for now, will be implemented later
+            {SHOW_AUTHOR_SIDEBAR && (
               <dl
                 className="pt-6 pb-10 xl:border-b xl:border-gray-200 xl:pt-11 xl:dark:border-gray-700"
                 style={{
