@@ -63,6 +63,7 @@ export default function Home({ posts }) {
   const [isMounted, setIsMounted] = useState(false)
   const [fullText, setFullText] = useState('')
   const [showEmoji, setShowEmoji] = useState(false)
+  const [showLatest, setShowLatest] = useState(false)
 
   useEffect(() => {
     // Select welcome message only on client-side to avoid SSR/hydration mismatch
@@ -71,10 +72,18 @@ export default function Home({ posts }) {
   }, [])
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY)
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      setScrollY(currentScrollY)
+      
+      // Show Latest section when user scrolls down 300px
+      if (currentScrollY > 100 && !showLatest) {
+        setShowLatest(true)
+      }
+    }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [showLatest])
 
   // Realistic typing animation effect based on keyboard distances
   useEffect(() => {
@@ -152,13 +161,21 @@ export default function Home({ posts }) {
             Thanks for stopping by and happy reading :)
             </p>
           </div>
-          <div className="space-y-4 mt-40">
+        </div>
+        {/* Latest section with scroll-reveal animation */}
+        <div 
+          className={`transition-all duration-1000 ease-out ${
+            showLatest 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-20'
+          }`}
+        >
+          <div className="space-y-4 mt-20">
             <h1 className="text-3xl leading-8 font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 dark:text-gray-100">
               Latest
             </h1>
           </div>
-        </div>
-        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+        <ul className="divide-y divide-gray-200 dark:divide-gray-700 mt-8">
           {!posts.length && 'No posts found.'}
           {posts.slice(0, MAX_DISPLAY).map((post) => {
             const { slug, date, title, summary, tags, readingTime } = post
@@ -214,18 +231,19 @@ export default function Home({ posts }) {
             )
           })}
         </ul>
-      </div>
-      {posts.length > MAX_DISPLAY && (
-        <div className="flex justify-end text-base leading-6 font-medium mt-6 relative z-10">
-          <Link
-            href="/stories"
-            className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
-            aria-label="All posts"
-          >
-            All Posts &rarr;
-          </Link>
+        {posts.length > MAX_DISPLAY && (
+          <div className="flex justify-end text-base leading-6 font-medium mt-6">
+            <Link
+              href="/stories"
+              className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+              aria-label="All posts"
+            >
+              All Posts &rarr;
+            </Link>
+          </div>
+        )}
         </div>
-      )}
+      </div>
       {siteMetadata.newsletter?.provider && (
         <div id="newsletter" className="flex items-center justify-center pt-4 relative z-10">
           <NewsletterForm />
