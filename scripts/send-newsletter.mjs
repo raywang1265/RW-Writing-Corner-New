@@ -112,7 +112,7 @@ function createEmailHTML(content, email) {
                 You're receiving this because you subscribed to ${FROM_NAME}.
               </p>
               <p style="margin: 0; font-size: 14px; color: #666;">
-                <a href="${SITE_URL}/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}" style="color: #0066cc; text-decoration: none;">Unsubscribe</a>
+                <a href="${SITE_URL}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #0066cc; text-decoration: none;">Unsubscribe</a>
               </p>
             </td>
           </tr>

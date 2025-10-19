@@ -1,5 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { createAdminClient } from '@/lib/supabase'
+import { Resend } from 'resend'
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
+
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+// Email configuration
+const FROM_EMAIL = process.env.NEWSLETTER_FROM_EMAIL || 'newsletter@yourdomain.com'
+const FROM_NAME = process.env.NEWSLETTER_FROM_NAME || 'RW Writing Corner'
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://tailwind-nextjs-starter-blog.vercel.app'
+
+async function sendWelcomeEmail(email: string) {
+  try {
+    // Read the welcome email template
+    const templatePath = resolve(process.cwd(), 'newsletter-templates', 'welcome.html')
+    let htmlContent = readFileSync(templatePath, 'utf-8')
+
+    // Replace placeholders
+    htmlContent = htmlContent.replace(/{{SITE_URL}}/g, SITE_URL)
+    htmlContent = htmlContent.replace(/{{EMAIL}}/g, encodeURIComponent(email))
+
+    // Plain text version (important for spam filters)
+    const textContent = `
+RW Writing Corner
+
+Thanks for subscribing
+
+You'll receive updates when I publish new stories, including science fiction, fantasy, personal reflections, and tech writing.
+
+You can look forward to: New story notifications and occasional updates about my writing. No spam, unsubscribe anytime.
+
+Read Stories: ${SITE_URL}/stories
+
+Happy reading!
+Ray
+
+---
+© 2025 RW Writing Corner. All rights reserved.
+Unsubscribe: ${SITE_URL}/unsubscribe?email=${encodeURIComponent(email)}
+    `.trim()
+
+    // Send the email with both HTML and plain text versions
+    const { data, error } = await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to: email,
+      subject: `Welcome to ${FROM_NAME}`,
+      html: htmlContent,
+      text: textContent,
+    })
+
+    if (error) {
+      console.error('Error sending welcome email:', error)
+      return { success: false, error }
+    }
+
+    return { success: true, data }
+  } catch (error) {
+    console.error('Error in sendWelcomeEmail:', error)
+    return { success: false, error }
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,7 +72,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // Check if email already exists
     const { data: existing, error: checkError } = await supabase
@@ -39,6 +102,11 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ error: 'Failed to resubscribe' }, { status: 500 })
         }
 
+        // Send welcome email (don't block on it)
+        sendWelcomeEmail(email.toLowerCase()).catch((err) => {
+          console.error('Failed to send welcome email:', err)
+        })
+
         return NextResponse.json({ message: 'Successfully resubscribed!' }, { status: 200 })
       }
     }
@@ -55,13 +123,19 @@ export async function POST(req: NextRequest) {
 
     if (insertError) {
       console.error('Error inserting subscriber:', insertError)
+      // Check if it's a duplicate key error (email already exists)
+      if (insertError.code === '23505') {
+        return NextResponse.json({ message: "You're already subscribed!" }, { status: 200 })
+      }
       return NextResponse.json({ error: 'Failed to subscribe' }, { status: 500 })
     }
 
-    return NextResponse.json(
-      { message: 'Successfully subscribed! Thank you for subscribing.' },
-      { status: 201 }
-    )
+    // Send welcome email (don't block on it)
+    sendWelcomeEmail(email.toLowerCase()).catch((err) => {
+      console.error('Failed to send welcome email:', err)
+    })
+
+    return NextResponse.json({ message: 'Successfully subscribed!' }, { status: 201 })
   } catch (error) {
     console.error('Subscription error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
