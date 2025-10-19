@@ -35,9 +35,29 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
   const [scrollY, setScrollY] = useState(0)
   const [smoothProgress, setSmoothProgress] = useState(0)
   const [fontSize, setFontSize] = useState(100)
+  const [isLargeScreen, setIsLargeScreen] = useState(false)
 
   // Easing function for smoother animation
   const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+
+  // Detect if screen is large (xl breakpoint = 1280px)
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 1280px)')
+    
+    const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      setIsLargeScreen(e.matches)
+    }
+    
+    // Set initial value
+    handleMediaChange(mediaQuery)
+    
+    // Listen for changes
+    mediaQuery.addEventListener('change', handleMediaChange)
+    
+    return () => {
+      mediaQuery.removeEventListener('change', handleMediaChange)
+    }
+  }, [])
 
   useEffect(() => {
     let targetScrollY = 0
@@ -84,11 +104,12 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
   // Calculate text centering so the 3/4-width content is centered in a 4-col grid.
   // Translate is relative to the element's width, so we convert the desired container shift (12.5%)
   // into element-relative units: (12.5% / 75%) = 16.6667% of the element width.
+  // Only apply this animation on large screens (xl breakpoint) where the sidebar layout exists
   const gridColumns = 4
   const contentSpan = 3
   const contentWidthFraction = contentSpan / gridColumns // 0.75
   const targetCenterShiftFraction = (1 - contentWidthFraction) / 2 // 0.125 of container
-  const textTranslateX = -smoothProgress * (targetCenterShiftFraction / contentWidthFraction) * 100
+  const textTranslateX = isLargeScreen ? -smoothProgress * (targetCenterShiftFraction / contentWidthFraction) * 100 : 0
 
   // Use the reading time from the full post object, format to whole number, fallback to 1 if not provided
   const displayReadingTime = readingTime ? Math.ceil(readingTime) : 1
