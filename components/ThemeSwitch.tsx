@@ -36,22 +36,6 @@ const Moon = () => (
     <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
   </svg>
 )
-const Monitor = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 20 20"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="group:hover:text-gray-100 h-6 w-6"
-  >
-    <rect x="3" y="3" width="14" height="10" rx="2" ry="2"></rect>
-    <line x1="7" y1="17" x2="13" y2="17"></line>
-    <line x1="10" y1="13" x2="10" y2="17"></line>
-  </svg>
-)
 const Blank = () => <svg className="h-6 w-6" />
 
 const ThemeSwitch = () => {
@@ -107,22 +91,6 @@ const ThemeSwitch = () => {
                           <Moon />
                         </div>
                         Dark
-                      </button>
-                    )}
-                  </MenuItem>
-                </Radio>
-                <Radio value="system">
-                  <MenuItem>
-                    {({ focus }) => (
-                      <button
-                        className={`${
-                          focus ? 'bg-primary-600 text-white' : ''
-                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                      >
-                        <div className="mr-2">
-                          <Monitor />
-                        </div>
-                        System
                       </button>
                     )}
                   </MenuItem>

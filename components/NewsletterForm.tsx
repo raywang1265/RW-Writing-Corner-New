@@ -39,12 +39,12 @@ export default function NewsletterForm() {
 
   return (
     <div className="w-full max-w-md">
-      <div className="rounded-lg bg-gray-100 p-6 dark:bg-gray-800">
+      <div className="rounded-lg bg-gray-100/40 backdrop-blur-md p-6 dark:bg-gray-800/40">
         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
           Subscribe to the newsletter
         </h3>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Get notified when new stories are published
+          Get notified when new stories are published!
         </p>
         <form onSubmit={handleSubmit} className="mt-4">
           <div className="flex flex-col gap-2">

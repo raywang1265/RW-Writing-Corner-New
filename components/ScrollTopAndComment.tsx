@@ -44,7 +44,7 @@ const ScrollTopAndComment = ({ fontSize = 100, onFontSizeChange }: ScrollTopAndC
     <div
       className={`fixed right-8 bottom-8 hidden flex-col gap-3 ${show ? 'md:flex' : 'md:hidden'}`}
     >
-      {siteMetadata.comments?.provider && (
+      {false && siteMetadata.comments?.provider && ( //hiden for now, will be implemented later
         <button
           aria-label="Scroll To Comment"
           onClick={handleScrollToComment}

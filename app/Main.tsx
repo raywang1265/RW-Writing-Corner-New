@@ -136,7 +136,7 @@ export default function Home({ posts }) {
                 </>
               )}
             </h1>
-            <p className="text-xl leading-8 text-gray-600 dark:text-gray-300 max-w-[700px]">
+            <p className="text-xl leading-8 text-gray-900 dark:text-gray-300 max-w-[700px]">
             You've arrived at my hub for all things writing, with a side of tech and personal projects. If you'd like to delve into some fiction, head over to the stories tab or scroll down to see the latest stories. 
             <br></br>
             <br></br>
@@ -168,11 +168,11 @@ export default function Home({ posts }) {
                   <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
                     <dl>
                       <dt className="sr-only">Published on</dt>
-                      <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
+                      <dd className="text-base leading-6 font-medium text-gray-700 dark:text-gray-400">
                         <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
                       </dd>
                       {readingTime && (
-                        <dd className="text-sm text-gray-500 dark:text-gray-400">
+                        <dd className="text-sm text-gray-700 dark:text-gray-400">
                           {Math.ceil(readingTime.minutes)} min read
                         </dd>
                       )}
@@ -194,7 +194,7 @@ export default function Home({ posts }) {
                             ))}
                           </div>
                         </div>
-                        <div className="prose max-w-none text-gray-500 dark:text-gray-400">
+                        <div className="prose max-w-none text-gray-700 dark:text-gray-400">
                           {summary}
                         </div>
                       </div>
