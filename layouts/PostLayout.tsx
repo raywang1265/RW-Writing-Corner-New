@@ -39,14 +39,10 @@ export default function PostLayout({
   const { filePath, path, slug, date, title, tags } = content
   const basePath = path.split('/')[0]
 
-  const [scrollY, setScrollY] = useState(0)
-  const [smoothProgress, setSmoothProgress] = useState(0)
+  const [isAtTop, setIsAtTop] = useState(true)
   const [fontSize, setFontSize] = useState(100)
   const [isLargeScreen, setIsLargeScreen] = useState(false)
   const SHOW_AUTHOR_SIDEBAR = false // Hidden for now, will be implemented later
-
-  // Easing function for smoother animation
-  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
 
   // Detect if screen is large (xl breakpoint = 1280px)
   useEffect(() => {
@@ -68,61 +64,38 @@ export default function PostLayout({
   }, [])
 
   useEffect(() => {
-    let targetScrollY = 0
-    let animationFrameId: number
-
     const handleScroll = () => {
-      targetScrollY = window.scrollY
+      const scrollPosition = window.scrollY
+      // Check if we're at the very top (or within 5px to account for sub-pixel rendering)
+      setIsAtTop(scrollPosition < 5)
     }
 
-    const animate = () => {
-      // Smooth interpolation between current and target scroll position
-      setScrollY((prev) => {
-        const diff = targetScrollY - prev
-        const newScrollY = prev + diff * 0.1 // Adjust this value (0.1) for more/less smoothing
-
-        // Calculate animation progress based on smooth scroll position
-        const animationStart = 100
-        const animationEnd = 800
-        const rawProgress = Math.min(
-          Math.max((newScrollY - animationStart) / (animationEnd - animationStart), 0),
-          1
-        )
-        const easedProgress = easeOutCubic(rawProgress)
-        setSmoothProgress(easedProgress)
-
-        return newScrollY
-      })
-
-      animationFrameId = requestAnimationFrame(animate)
-    }
+    // Set initial state
+    handleScroll()
 
     window.addEventListener('scroll', handleScroll, { passive: true })
-    animationFrameId = requestAnimationFrame(animate)
 
     return () => {
       window.removeEventListener('scroll', handleScroll)
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId)
-      }
     }
   }, [])
 
-  // Calculate transforms based on smooth progress
-  const sidebarTranslateX = -smoothProgress * 100 // Move left as scroll increases
-  const sidebarOpacity = 1 - smoothProgress // Fade out as scroll increases
+  // Calculate transforms based on scroll position
+  // When not at top: hide sidebar and center content
+  // When at top: show sidebar and content in original position
+  // Only apply animations on large screens (xl breakpoint) where the sidebar layout exists
+  const sidebarTranslateX = isLargeScreen && !isAtTop ? -100 : 0 // Move completely off screen when scrolled
+  const sidebarOpacity = isLargeScreen && !isAtTop ? 0 : 1 // Fully fade out when scrolled
 
   // Calculate text centering so the 3/4-width content is centered in a 4-col grid.
   // Translate is relative to the element's width, so we convert the desired container shift (12.5%)
   // into element-relative units: (12.5% / 75%) = 16.6667% of the element width.
-  // Only apply this animation on large screens (xl breakpoint) where the sidebar layout exists
   const gridColumns = 4
   const contentSpan = 3
   const contentWidthFraction = contentSpan / gridColumns // 0.75
   const targetCenterShiftFraction = (1 - contentWidthFraction) / 2 // 0.125 of container
-  const textTranslateX = isLargeScreen
-    ? -smoothProgress * (targetCenterShiftFraction / contentWidthFraction) * 100
-    : 0
+  const textTranslateX =
+    isLargeScreen && !isAtTop ? -(targetCenterShiftFraction / contentWidthFraction) * 100 : 0
 
   // Use the reading time from the full post object, format to whole number, fallback to 1 if not provided
   const displayReadingTime = readingTime ? Math.ceil(readingTime) : 1
@@ -162,7 +135,7 @@ export default function PostLayout({
                 style={{
                   transform: `translateX(${sidebarTranslateX}%)`,
                   opacity: sidebarOpacity,
-                  transition: 'none',
+                  transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
                 }}
               >
                 <dt className="sr-only">Authors</dt>
@@ -209,7 +182,7 @@ export default function PostLayout({
                 className="prose dark:prose-invert max-w-none pt-10 pb-8"
                 style={{
                   transform: `translateX(${textTranslateX}%)`,
-                  transition: 'none',
+                  transition: 'transform 0.5s ease-in-out',
                   fontSize: `${fontSize}%`,
                 }}
               >
@@ -236,7 +209,7 @@ export default function PostLayout({
               style={{
                 transform: `translateX(${sidebarTranslateX}%)`,
                 opacity: sidebarOpacity,
-                transition: 'none',
+                transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out',
               }}
             >
               <div className="divide-gray-200 text-sm leading-5 font-medium xl:col-start-1 xl:row-start-2 xl:divide-y dark:divide-gray-700">
