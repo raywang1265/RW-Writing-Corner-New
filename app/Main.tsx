@@ -175,7 +175,7 @@ export default function Home({ posts }) {
                 href="/stories/my-story-with-tech"
                 className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 underline"
               >
-                this article on my history with tech
+                this article on my story with tech
               </Link>
               !<br></br>
               <br></br>
