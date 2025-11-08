@@ -8,6 +8,7 @@ import Link from '@/components/Link'
 import PageTitle from '@/components/PageTitle'
 import SectionContainer from '@/components/SectionContainer'
 import Image from '@/components/Image'
+import CoverImage from '@/components/CoverImage'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
@@ -36,8 +37,9 @@ export default function PostLayout({
   children,
   readingTime,
 }: LayoutProps) {
-  const { filePath, path, slug, date, title, tags } = content
+  const { filePath, path, slug, date, title, tags, images } = content
   const basePath = path.split('/')[0]
+  const displayImage = images && images.length > 0 ? images[0] : null
 
   const [isAtTop, setIsAtTop] = useState(true)
   const [fontSize, setFontSize] = useState(100)
@@ -66,8 +68,8 @@ export default function PostLayout({
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY
-      // Check if we're at the very top (or within 5px to account for sub-pixel rendering)
-      setIsAtTop(scrollPosition < 5)
+      // Check if we're within 500px of the top - animation only triggers after scrolling down 500px
+      setIsAtTop(scrollPosition < 500)
     }
 
     // Set initial state
@@ -125,6 +127,15 @@ export default function PostLayout({
                   {displayReadingTime} min read
                 </span>
               </div>
+              {displayImage && (
+                <CoverImage
+                  src={displayImage}
+                  alt={title}
+                  maxWidth={600}
+                  maxHeight={300}
+                  containerClassName="my-6"
+                />
+              )}
             </div>
           </header>
           <div className="relative grid-rows-[auto_1fr] divide-y divide-gray-200 overflow-hidden pb-8 xl:grid xl:grid-cols-4 xl:gap-x-6 xl:divide-y-0 dark:divide-gray-700">

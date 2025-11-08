@@ -1,6 +1,5 @@
 import { ReactNode } from 'react'
-import Image from '@/components/Image'
-import Bleed from 'pliny/ui/Bleed'
+import CoverImage from '@/components/CoverImage'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import type { Blog } from 'contentlayer/generated'
 import Comments from '@/components/Comments'
@@ -19,8 +18,7 @@ interface LayoutProps {
 
 export default function PostMinimal({ content, next, prev, children }: LayoutProps) {
   const { slug, title, images } = content
-  const displayImage =
-    images && images.length > 0 ? images[0] : 'https://picsum.photos/seed/picsum/800/400'
+  const displayImage = images && images.length > 0 ? images[0] : null
 
   return (
     <SectionContainer>
@@ -28,16 +26,22 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
       <article>
         <div>
           <div className="space-y-1 pb-10 text-center dark:border-gray-700">
-            <div className="w-full">
-              <Bleed>
-                <div className="relative aspect-2/1 w-full">
-                  <Image src={displayImage} alt={title} fill className="object-cover" />
-                </div>
-              </Bleed>
-            </div>
+            {/* Title Section - Adjust spacing with pt-* and pb-* classes */}
             <div className="relative pt-10">
               <PageTitle>{title}</PageTitle>
             </div>
+            {/* Cover Image Section - Positioned below title, centered */}
+            {/* Adjust maxWidth and maxHeight props to change image size constraints */}
+            {/* Adjust containerClassName to change spacing/positioning (e.g., "my-12" for more vertical space) */}
+            {displayImage && (
+              <CoverImage
+                src={displayImage}
+                alt={title}
+                maxWidth={600}
+                maxHeight={400}
+                containerClassName="my-6"
+              />
+            )}
           </div>
           <div className="prose dark:prose-invert max-w-none py-4">{children}</div>
           {/* will implement later */}
