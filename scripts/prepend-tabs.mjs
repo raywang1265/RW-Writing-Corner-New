@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Prepend `&nbsp;` to every non-empty line after the YAML front matter.
+ * Prepend `&nbsp;` to every non-empty line after the YAML front matter,
+ * correctly wrap `***` scene breaks in centered divs,
+ * and ensure every line ends with exactly two spaces for Markdown hard breaks.
  *
  * Usage:
- *   node scripts/prepend-tabs.mjs <path/to/file.mdx>
+ * node scripts/prepend-tabs.mjs <path/to/file.mdx>
  */
 
 import fs from 'fs'
@@ -16,30 +18,27 @@ function printUsageAndExit() {
 }
 
 function computeFrontMatterEndIndex(fileContent) {
-  // Find lines that are exactly '---' (front matter delimiters)
   const delimiterRegex = /^---\s*$/gm
   const indices = []
   let match
   while ((match = delimiterRegex.exec(fileContent)) !== null) {
     indices.push(match.index)
-    // Guard against infinite loops for zero-width matches (shouldn't happen here)
     if (match.index === delimiterRegex.lastIndex) delimiterRegex.lastIndex++
   }
 
-  // Expect front matter to start at position 0 and have a closing delimiter
   if (indices.length >= 2 && indices[0] === 0) {
     const second = indices[1]
-    // Find end-of-line after the second delimiter to include the newline
     const newlineIdx = fileContent.indexOf('\n', second)
     return newlineIdx === -1 ? fileContent.length : newlineIdx + 1
   }
 
-  return 0 // No front matter block detected at the top
+  return 0 
 }
 
 function wrapCenteredDividers(body) {
-  // Find lines with just \*\*\* (escaped asterisks) and wrap them in centered div
-  return body.replace(/^(\s*)\\\*\\\*\\\*(\s*)$/gm, '$1<div align="center">\\*\\*\\*</div>$2')
+  // FIXED: Removed the extra backslashes. 
+  // \*\*\* correctly escapes the asterisks for regex so it matches exactly ***
+  return body.replace(/^(\s*)\*\*\*(\s*)$/gm, '$1<div align="center">***</div>$2')
 }
 
 function transformBody(body) {
@@ -52,6 +51,9 @@ function transformBody(body) {
     /^(?!\s*<div)(?=.*\S)/gm,
     '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
   )
+
+  // Finally, remove existing trailing spaces/tabs and append exactly two spaces.
+  transformed = transformed.replace(/[ \t]*(\r?)$/gm, '  $1')
 
   return transformed
 }
@@ -72,7 +74,6 @@ function prependNbspToFile(filePath) {
   const output = head + transformedBody
   fs.writeFileSync(absolutePath, output, 'utf8')
 
-  // Report a brief summary
   const totalLines = original.split(/\r?\n/).length
   const changedLines = (body.match(/^.*\S.*$/gm) || []).length
   console.log(`Updated ${filePath} — total lines: ${totalLines}, modified lines: ${changedLines}`)
