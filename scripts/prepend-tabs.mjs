@@ -32,11 +32,11 @@ function computeFrontMatterEndIndex(fileContent) {
     return newlineIdx === -1 ? fileContent.length : newlineIdx + 1
   }
 
-  return 0 
+  return 0
 }
 
 function wrapCenteredDividers(body) {
-  // FIXED: Removed the extra backslashes. 
+  // FIXED: Removed the extra backslashes.
   // \*\*\* correctly escapes the asterisks for regex so it matches exactly ***
   return body.replace(/^(\s*)\*\*\*(\s*)$/gm, '$1<div align="center">***</div>$2')
 }
