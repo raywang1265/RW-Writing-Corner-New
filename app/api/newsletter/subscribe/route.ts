@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getFirestore, admin } from '@/lib/firebase'
 import { Resend } from 'resend'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
@@ -86,70 +86,57 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
     }
 
-    const supabase = createAdminClient()
+    const db = getFirestore()
+    const normalizedEmail = email.toLowerCase()
+    const subscriberRef = db.collection('newsletter_subscribers').doc(normalizedEmail)
 
     // Check if email already exists
-    const { data: existing, error: checkError } = await supabase
-      .from('newsletter_subscribers')
-      .select('email, subscribed')
-      .eq('email', email.toLowerCase())
-      .single()
+    const doc = await subscriberRef.get()
 
-    if (checkError && checkError.code !== 'PGRST116') {
-      // PGRST116 is "not found" error, which is okay
-      console.error('Error checking subscriber:', checkError)
-      return NextResponse.json({ error: 'Database error' }, { status: 500 })
-    }
-
-    if (existing) {
-      if (existing.subscribed) {
+    if (doc.exists) {
+      const data = doc.data()
+      if (data?.subscribed) {
         return NextResponse.json({ message: 'You are already subscribed!' }, { status: 200 })
       } else {
         // Resubscribe
-        const { error: updateError } = await supabase
-          .from('newsletter_subscribers')
-          .update({ subscribed: true, updated_at: new Date().toISOString() })
-          .eq('email', email.toLowerCase())
+        try {
+          await subscriberRef.update({
+            subscribed: true,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          })
 
-        if (updateError) {
+          // Send welcome email (don't block on it)
+          sendWelcomeEmail(normalizedEmail).catch((err) => {
+            console.error('Failed to send welcome email:', err)
+          })
+
+          return NextResponse.json({ message: 'Successfully resubscribed!' }, { status: 200 })
+        } catch (updateError) {
           console.error('Error resubscribing:', updateError)
           return NextResponse.json({ error: 'Failed to resubscribe' }, { status: 500 })
         }
-
-        // Send welcome email (don't block on it)
-        sendWelcomeEmail(email.toLowerCase()).catch((err) => {
-          console.error('Failed to send welcome email:', err)
-        })
-
-        return NextResponse.json({ message: 'Successfully resubscribed!' }, { status: 200 })
       }
     }
 
     // Add new subscriber
-    const { error: insertError } = await supabase.from('newsletter_subscribers').insert([
-      {
-        email: email.toLowerCase(),
+    try {
+      await subscriberRef.set({
+        email: normalizedEmail,
         subscribed: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ])
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      })
 
-    if (insertError) {
+      // Send welcome email (don't block on it)
+      sendWelcomeEmail(normalizedEmail).catch((err) => {
+        console.error('Failed to send welcome email:', err)
+      })
+
+      return NextResponse.json({ message: 'Successfully subscribed!' }, { status: 201 })
+    } catch (insertError) {
       console.error('Error inserting subscriber:', insertError)
-      // Check if it's a duplicate key error (email already exists)
-      if (insertError.code === '23505') {
-        return NextResponse.json({ message: "You're already subscribed!" }, { status: 200 })
-      }
       return NextResponse.json({ error: 'Failed to subscribe' }, { status: 500 })
     }
-
-    // Send welcome email (don't block on it)
-    sendWelcomeEmail(email.toLowerCase()).catch((err) => {
-      console.error('Failed to send welcome email:', err)
-    })
-
-    return NextResponse.json({ message: 'Successfully subscribed!' }, { status: 201 })
   } catch (error) {
     console.error('Subscription error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

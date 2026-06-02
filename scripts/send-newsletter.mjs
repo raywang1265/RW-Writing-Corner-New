@@ -14,7 +14,7 @@
  */
 
 import { config } from 'dotenv'
-import { createClient } from '@supabase/supabase-js'
+import admin from 'firebase-admin'
 import { Resend } from 'resend'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
@@ -86,17 +86,28 @@ try {
   process.exit(1)
 }
 
-// Initialize Clients
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+// Initialize Firebase Admin
+const projectId = process.env.FIREBASE_PROJECT_ID
+const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
+const privateKey = process.env.FIREBASE_PRIVATE_KEY
 const resendApiKey = process.env.RESEND_API_KEY
 
-if (!supabaseUrl || !supabaseKey || !resendApiKey) {
-  console.error('Missing Supabase or Resend environment variables')
+if (!projectId || !clientEmail || !privateKey || !resendApiKey) {
+  console.error('Missing Firebase or Resend environment variables')
   process.exit(1)
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey)
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId,
+      clientEmail,
+      privateKey: privateKey.replace(/\\n/g, '\n'),
+    }),
+  })
+}
+
+const db = admin.firestore()
 const resend = new Resend(resendApiKey)
 
 // Configuration
@@ -116,13 +127,20 @@ function injectVariables(html, variables) {
 
 // Fetch Subscribers
 async function getSubscribers() {
-  const { data, error } = await supabase
-    .from('newsletter_subscribers')
-    .select('email')
-    .eq('subscribed', true)
+  try {
+    const snapshot = await db
+      .collection('newsletter_subscribers')
+      .where('subscribed', '==', true)
+      .get()
 
-  if (error) throw new Error(`Failed to fetch subscribers: ${error.message}`)
-  return data.map((sub) => sub.email)
+    if (snapshot.empty) {
+      return []
+    }
+
+    return snapshot.docs.map((doc) => doc.data().email)
+  } catch (error) {
+    throw new Error(`Failed to fetch subscribers: ${error.message}`)
+  }
 }
 
 // Send Single Email

@@ -15,8 +15,7 @@
   "dependencies": {
     "@headlessui/react": "2.2.0",
     "@next/bundle-analyzer": "15.2.4",
-    "@supabase/ssr": "^0.7.0",
-    "@supabase/supabase-js": "^2.75.0",
+    "@supabase/supabase-js": "^2.107.0",
     "@tailwindcss/forms": "^0.5.9",
     "@tailwindcss/postcss": "^4.0.5",
     "@tailwindcss/typography": "^0.5.15",
@@ -25,6 +24,7 @@
     "contentlayer2": "0.5.5",
     "dotenv": "^17.2.3",
     "esbuild": "0.25.2",
+    "firebase-admin": "^13.10.0",
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.2",
     "hast-util-from-html-isomorphic": "^2.0.0",

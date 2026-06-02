@@ -50,7 +50,7 @@ const siteMetadata = {
     // },
   },
   newsletter: {
-    // Custom newsletter system using Supabase + Resend
+    // Custom newsletter system using Firebase + Resend
     // See NEWSLETTER_SETUP.md for configuration instructions
     provider: 'custom',
   },
