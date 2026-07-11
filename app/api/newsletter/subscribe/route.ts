@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { getFirestore, admin } from '@/lib/firebase'
 import { Resend } from 'resend'
 import { readFileSync } from 'fs'
@@ -105,9 +105,13 @@ export async function POST(req: NextRequest) {
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
           })
 
-          // Send welcome email (don't block on it)
-          sendWelcomeEmail(normalizedEmail).catch((err) => {
-            console.error('Failed to send welcome email:', err)
+          // Keep the function alive after the response so Resend isn't cut off on Vercel
+          after(async () => {
+            try {
+              await sendWelcomeEmail(normalizedEmail)
+            } catch (err) {
+              console.error('Failed to send welcome email:', err)
+            }
           })
 
           return NextResponse.json({ message: 'Successfully resubscribed!' }, { status: 200 })
@@ -127,9 +131,13 @@ export async function POST(req: NextRequest) {
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       })
 
-      // Send welcome email (don't block on it)
-      sendWelcomeEmail(normalizedEmail).catch((err) => {
-        console.error('Failed to send welcome email:', err)
+      // Keep the function alive after the response so Resend isn't cut off on Vercel
+      after(async () => {
+        try {
+          await sendWelcomeEmail(normalizedEmail)
+        } catch (err) {
+          console.error('Failed to send welcome email:', err)
+        }
       })
 
       return NextResponse.json({ message: 'Successfully subscribed!' }, { status: 201 })
