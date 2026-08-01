@@ -21,14 +21,15 @@ import matter from 'gray-matter'
 import { readFileSync, readdirSync } from 'fs'
 import { resolve, basename } from 'path'
 import { createInterface } from 'readline/promises'
-import siteMetadata from '../data/siteMetadata.js'
 
 // Load environment variables
 config({ path: '.env.local' })
 
 const STORIES_DIR = resolve(process.cwd(), 'data', 'stories')
 const TEMPLATE_PATH = resolve(process.cwd(), 'newsletter-templates', 'new-story.html')
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || siteMetadata.siteUrl
+// Newsletter links must always point at the live domain, even when
+// NEXT_PUBLIC_SITE_URL is set to localhost for local development.
+const SITE_URL = process.env.NEWSLETTER_SITE_URL || 'https://www.rwwritingcorner.com'
 
 // Parse command line arguments
 const args = process.argv.slice(2)
