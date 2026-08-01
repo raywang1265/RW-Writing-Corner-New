@@ -43,7 +43,7 @@ export default function PostLayout({
   const displayImage = images && images.length > 0 ? images[0] : null
 
   const [isAtTop, setIsAtTop] = useState(true)
-  const [fontSize, setFontSize] = useState(100)
+  const [fontSize, setFontSize] = useState(110)
   const [isLargeScreen, setIsLargeScreen] = useState(false)
   const SHOW_AUTHOR_SIDEBAR = false // Hidden for now, will be implemented later
 
