@@ -84,7 +84,8 @@ function findMatches(stories, query) {
   if (exact) return [exact]
 
   return stories.filter(
-    (s) => normalize(s.slug).includes(normalizedQuery) || normalize(s.title).includes(normalizedQuery)
+    (s) =>
+      normalize(s.slug).includes(normalizedQuery) || normalize(s.title).includes(normalizedQuery)
   )
 }
 
@@ -140,7 +141,10 @@ function injectVariables(html, variables) {
 
 // Fetch Subscribers
 async function getSubscribers(db) {
-  const snapshot = await db.collection('newsletter_subscribers').where('subscribed', '==', true).get()
+  const snapshot = await db
+    .collection('newsletter_subscribers')
+    .where('subscribed', '==', true)
+    .get()
 
   if (snapshot.empty) return []
   return snapshot.docs.map((doc) => doc.data().email)
@@ -181,7 +185,9 @@ async function runDryRun({ story, htmlTemplate, storyUrl, db, resend }) {
   let subscribers = []
   try {
     subscribers = await getSubscribers(db)
-    console.log(`✅ Database reachable (Firestore). Found ${subscribers.length} active subscriber(s):`)
+    console.log(
+      `✅ Database reachable (Firestore). Found ${subscribers.length} active subscriber(s):`
+    )
     if (subscribers.length === 0) {
       console.log('   (no active subscribers)')
     } else {
