@@ -12,6 +12,7 @@ import CoverImage from '@/components/CoverImage'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
+import { formatDate } from '@/lib/formatDate'
 
 const postDateTemplate: Intl.DateTimeFormatOptions = {
   weekday: 'long',
@@ -114,7 +115,7 @@ export default function PostLayout({
                   <dt className="sr-only">Published on</dt>
                   <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
                     <time dateTime={date}>
-                      {new Date(date).toLocaleDateString(siteMetadata.locale, postDateTemplate)}
+                      {formatDate(date, siteMetadata.locale, postDateTemplate)}
                     </time>
                   </dd>
                 </div>
